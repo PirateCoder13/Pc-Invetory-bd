@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mesh, wsus, av, ocs, regional, data_cadastro
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
-        
+
         $stmt->execute([
             $_POST['nome'],
             $_POST['ip'],
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_POST['ocs'],
             $_POST['regional']
         ]);
-        
+
         header("Location: /");
         exit();
     } catch (PDOException $e) {
@@ -41,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <h2>Cadastrar Nova Máquina</h2>
 
-<?php if(isset($erro)): ?>
-<div class="alert alert-danger"><?= $erro ?></div>
+<?php if (isset($erro)): ?>
+    <div class="alert alert-danger"><?= $erro ?></div>
 <?php endif; ?>
 
 <form method="post">
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label class="form-label">Nome da Máquina</label>
             <input type="text" name="nome" class="form-control" required>
         </div>
-        
+
         <div class="col-md-6">
             <label class="form-label">Status</label>
             <select name="status" class="form-select" required>
@@ -60,27 +60,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="Manutenção">Em Manutenção</option>
             </select>
         </div>
-        
+
         <div class="col-md-4">
             <label class="form-label">IP</label>
             <input type="text" name="ip" class="form-control">
         </div>
-        
+
         <div class="col-md-4">
             <label class="form-label">MAC Address</label>
             <input type="text" name="mac" class="form-control">
         </div>
-        
+
         <div class="col-md-4">
             <label class="form-label">Regional</label>
             <select name="regional" class="form-select">
                 <option value="">Selecione...</option>
                 <?php foreach ($regionais as $r): ?>
-                <option value="<?= $r['id'] ?>"><?= htmlspecialchars($r['nome']) ?></option>
+                    <option value="<?= $r['id'] ?>"><?= htmlspecialchars($r['nome']) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
-        
+
         <div class="col-md-3">
             <label class="form-label">Mesh</label>
             <select name="mesh" class="form-select">
@@ -88,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="N">NÃO</option>
             </select>
         </div>
-        
+
         <!-- Repetir para WSUS, AV, OCS -->
-        
+
         <div class="col-12">
             <button type="submit" class="btn btn-primary">Salvar</button>
             <a href="/" class="btn btn-secondary">Cancelar</a>

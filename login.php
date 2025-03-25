@@ -24,9 +24,9 @@ require 'includes/header.php';
 <div class="row justify-content-center">
     <div class="col-md-4">
         <h2 class="mb-4">Login</h2>
-        
-        <?php if(isset($erro)): ?>
-        <div class="alert alert-danger"><?= $erro ?></div>
+
+        <?php if (isset($erro)): ?>
+            <div class="alert alert-danger"><?= $erro ?></div>
         <?php endif; ?>
 
         <form method="post">

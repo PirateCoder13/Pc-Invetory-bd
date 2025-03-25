@@ -61,8 +61,8 @@ $maquinas = $stmt->fetchAll();
 
 <form class="mb-4">
     <div class="input-group">
-        <input type="text" name="pesquisa" class="form-control" 
-               placeholder="Pesquisar por nome ou IP" value="<?= htmlspecialchars($pesquisa) ?>">
+        <input type="text" name="pesquisa" class="form-control"
+            placeholder="Pesquisar por nome ou IP" value="<?= htmlspecialchars($pesquisa) ?>">
         <button class="btn btn-outline-secondary" type="submit">Buscar</button>
     </div>
 </form>
@@ -79,25 +79,25 @@ $maquinas = $stmt->fetchAll();
     </thead>
     <tbody>
         <?php foreach ($maquinas as $m): ?>
-        <tr>
-            <td><?= htmlspecialchars($m['nome']) ?></td>
-            <td><?= htmlspecialchars($m['ip']) ?></td>
-            <td><span class="badge bg-<?= $m['status'] == 'Ativa' ? 'success' : 'danger' ?>">
-                <?= htmlspecialchars($m['status']) ?>
-            </span></td>
-            <td>
-                <?php if ($m['contato_recente']): ?>
-                <?= date('d/m/Y H:i', strtotime($m['contato_recente'])) ?>
-                <?php else: ?>
-                N/A
-                <?php endif; ?>
-            </td>
-            <td>
-                <a href="maquinas/editar.php?id=<?= $m['id'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                <a href="maquinas/excluir.php?id=<?= $m['id'] ?>" class="btn btn-sm btn-danger" 
-                   onclick="return confirm('Tem certeza?')">Excluir</a>
-            </td>
-        </tr>
+            <tr>
+                <td><?= htmlspecialchars($m['nome']) ?></td>
+                <td><?= htmlspecialchars($m['ip']) ?></td>
+                <td><span class="badge bg-<?= $m['status'] == 'Ativa' ? 'success' : 'danger' ?>">
+                        <?= htmlspecialchars($m['status']) ?>
+                    </span></td>
+                <td>
+                    <?php if ($m['contato_recente']): ?>
+                        <?= date('d/m/Y H:i', strtotime($m['contato_recente'])) ?>
+                    <?php else: ?>
+                        N/A
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <a href="maquinas/editar.php?id=<?= $m['id'] ?>" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="maquinas/excluir.php?id=<?= $m['id'] ?>" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Tem certeza?')">Excluir</a>
+                </td>
+            </tr>
         <?php endforeach; ?>
     </tbody>
 </table>
