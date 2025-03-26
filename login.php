@@ -1,46 +1,49 @@
 <?php
+// Start session
+session_start();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $login = $_POST['login'];
-    $senha = $_POST['senha'];
+// Check if form is submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    $stmt = $pdo->prepare("SELECT * FROM Users WHERE login = ?");
-    $stmt->execute([$login]);
-    $usuario = $stmt->fetch();
+    // Dummy credentials for demonstration
+    $validUsername = 'admin';
+    $validPassword = '123456';
 
-    if ($usuario && password_verify($senha, $usuario['senha'])) {
-        $_SESSION['usuario_id'] = $usuario['id'];
-        header("Location: /");
+    if ($username === $validUsername && $password === $validPassword) {
+        // Set session variable
+        $_SESSION['username'] = $username;
+
+        // Redirect to index.php
+        header('Location: index.php');
         exit();
     } else {
-        $erro = "Credenciais inválidas!";
+        $error = "Invalid username or password!";
     }
 }
-
-$titulo = "Login";
-require 'includes/header.php';
 ?>
 
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <h2 class="mb-4">Login</h2>
-
-        <?php if (isset($erro)): ?>
-            <div class="alert alert-danger"><?= $erro ?></div>
-        <?php endif; ?>
-
-        <form method="post">
-            <div class="mb-3">
-                <label class="form-label">Login</label>
-                <input type="text" name="login" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Senha</label>
-                <input type="password" name="senha" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Entrar</button>
-        </form>
-    </div>
-</div>
-
-<?php require 'includes/footer.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <?php if (isset($error)) : ?>
+        <p style="color: red;"><?php echo $error; ?></p>
+    <?php endif; ?>
+    <form method="POST" action="">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

@@ -1,6 +1,26 @@
 <?php
+// Start session
 session_start();
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    // Redirect to login page if not logged in
+    header('Location: login.php');
+    exit();
+}
+// Botão de logout
+echo '<form method="post" style="display:inline;">
+    <button type="submit" name="logout" class="btn btn-sm btn-secondary">Logout</button>
+      </form>';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+    // Destruir a sessão e redirecionar para a página de login
+    session_destroy();
+    header('Location: login.php');
+    exit();
+}
+// Display logged-in user
+$loggedInUser = $_SESSION['username'];
+echo "<p>Bem-vindo, " . htmlspecialchars($loggedInUser) . "!</p>";
 // Configurações de conexão com o banco de dados
 $host = 'localhost';
 $dbname = 'controle_maquinas';
