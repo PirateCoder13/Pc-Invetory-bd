@@ -1,125 +1,136 @@
 <?php
-// Start session
 session_start();
-// Check if user is logged in
 if (!isset($_SESSION['username'])) {
-    // Redirect to login page if not logged in
     header('Location: login.php');
     exit();
 }
-// Botão de logout
-echo '<form method="post" style="display:inline;">
-    <button type="submit" name="logout" class="btn btn-sm btn-secondary">Logout</button>
-      </form>';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
-    // Destruir a sessão e redirecionar para a página de login
-    session_destroy();
-    header('Location: login.php');
-    exit();
-}
-// Display logged-in user
-$loggedInUser = $_SESSION['username'];
-echo "<p>Bem-vindo, " . htmlspecialchars($loggedInUser) . "!</p>";
-// Configurações de conexão com o banco de dados
+// Configurações de conexão
 $host = 'localhost';
 $dbname = 'controle_maquinas';
 $username = 'root';
-$password = ''; // Senha vazia, se não foi alterada
+$password = '';
 
-// Configuração do DSN e opções do PDO
-$dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-
-// Tentativa de conexão com o banco de dados
+// Conexão PDO
 try {
-    $pdo = new PDO($dsn, $username, $password, $options);
+    $pdo = new PDO(
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        $username,
+        $password,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]
+    );
 } catch (PDOException $e) {
-    die('Erro de conexão com o banco de dados: ' . $e->getMessage());
+    die("Erro de conexão: " . $e->getMessage());
 }
 
-// Título da página
-$titulo = "Dashboard";
-
-// Inclusão do cabeçalho
-require 'includes/header.php';
-
-// Lógica de pesquisa
-$pesquisa = isset($_GET['pesquisa']) ? $_GET['pesquisa'] : '';
-$where = '';
+// Processar pesquisa
+$pesquisa = $_GET['pesquisa'] ?? '';
+$where = [];
 $params = [];
 
-if ($pesquisa) {
-    $where = "WHERE nome LIKE ? OR ip LIKE ?";
-    $params = ["%$pesquisa%", "%$pesquisa%"];
+if (!empty($pesquisa)) {
+    $where[] = "(m.nome LIKE :pesquisa OR m.ip LIKE :pesquisa)";
+    $params[':pesquisa'] = "%$pesquisa%";
 }
 
-// Consulta SQL para obter máquinas com informações de regional e contato
+// Montar consulta
 $sql = "
-    SELECT m.*, r.nome as regional_nome, 
-           c.contato_recente, c.contato_anterior
-    FROM Maquinas m
-    LEFT JOIN Regionais r ON m.regional = r.id
-    LEFT JOIN Contato c ON m.id = c.maquina_id
-    $where
-    ORDER BY m.nome
+    SELECT 
+        m.id, m.nome, m.status, m.ip, m.mac, 
+        m.comentario, m.chamado, m.data_cadastro,
+        r.nome AS regional_nome,
+        c.contato_recente
+    FROM maquinas m
+    LEFT JOIN regionais r ON m.regional = r.id
+    LEFT JOIN contato c ON m.id = c.maquina_id
 ";
 
-// Preparação e execução da consulta SQL
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$maquinas = $stmt->fetchAll();
+if (!empty($where)) {
+    $sql .= " WHERE " . implode(" AND ", $where);
+}
 
+$sql .= " ORDER BY m.nome";
+
+// Executar consulta
+try {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $maquinas = $stmt->fetchAll();
+} catch (PDOException $e) {
+    die("Erro na consulta: " . $e->getMessage());
+}
+
+// Header
+require 'includes/header.php';
 ?>
 
-<!-- HTML da página -->
-<h2 class="mb-4">Máquinas Cadastradas</h2>
-
-<form class="mb-4">
-    <div class="input-group">
-        <input type="text" name="pesquisa" class="form-control"
-            placeholder="Pesquisar por nome ou IP" value="<?= htmlspecialchars($pesquisa) ?>">
-        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Controle de Máquinas</h2>
+        <div>
+            <a href="cadastro.php" class="btn btn-success btn-sm">Nova Máquina</a>
+            <form method="post" class="d-inline">
+                <button type="submit" name="logout" class="btn btn-danger btn-sm">Logout</button>
+            </form>
+        </div>
     </div>
-</form>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>IP</th>
-            <th>Status</th>
-            <th>Último Contato</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($maquinas as $m): ?>
-            <tr>
-                <td><?= htmlspecialchars($m['nome']) ?></td>
-                <td><?= htmlspecialchars($m['ip']) ?></td>
-                <td><span class="badge bg-<?= $m['status'] == 'Ativa' ? 'success' : 'danger' ?>">
-                        <?= htmlspecialchars($m['status']) ?>
-                    </span></td>
-                <td>
-                    <?php if ($m['contato_recente']): ?>
-                        <?= date('d/m/Y H:i', strtotime($m['contato_recente'])) ?>
-                    <?php else: ?>
-                        N/A
-                    <?php endif; ?>
-                </td>
-                <td>
-                    <a href="maquinas/editar.php?id=<?= $m['id'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                    <a href="maquinas/excluir.php?id=<?= $m['id'] ?>" class="btn btn-sm btn-danger"
-                        onclick="return confirm('Tem certeza?')">Excluir</a>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
+    <!-- Formulário de Pesquisa -->
+    <form class="mb-4">
+        <div class="input-group">
+            <input type="text" name="pesquisa" class="form-control" 
+                placeholder="Pesquisar por nome ou IP" value="<?= htmlspecialchars($pesquisa) ?>">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
 
-<?php require 'includes/footer.php'; ?>
+    <!-- Tabela de Máquinas -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>IP</th>
+                    <th>Status</th>
+                    <th>Regional</th>
+                    <th>Último Contato</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($maquinas as $maquina): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($maquina['nome']) ?></td>
+                        <td><?= htmlspecialchars($maquina['ip']) ?></td>
+                        <td>
+                            <span class="badge bg-<?= $maquina['status'] === 'Ativa' ? 'success' : 'danger' ?>">
+                                <?= htmlspecialchars($maquina['status']) ?>
+                            </span>
+                        </td>
+                        <td><?= htmlspecialchars($maquina['regional_nome'] ?? 'N/A') ?></td>
+                        <td>
+                            <?= $maquina['contato_recente'] 
+                                ? date('d/m/Y H:i', strtotime($maquina['contato_recente'])) 
+                                : 'N/A' ?>
+                        </td>
+                        <td>
+                            <a href="editar.php?id=<?= $maquina['id'] ?>" 
+                               class="btn btn-warning btn-sm">Editar</a>
+                            <a href="excluir.php?id=<?= $maquina['id'] ?>" 
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Tem certeza?')">Excluir</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<?php
+// Footer
+require 'includes/footer.php';
+?>
