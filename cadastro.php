@@ -93,8 +93,30 @@ $regionais = $pdo->query("SELECT id, nome FROM regionais")->fetchAll();
                     <option value="N">Não</option>
                 </select>
             </div>
-            <!-- Repetir para WSUS, AV e OCS -->
+
+            <div class="col-md-3">
+                <label class="form-label">WSUS:</label>
+                <select name="wsus" class="form-select">
+                    <option value="S">Sim</option>
+                    <option value="N">Não</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">AV:</label>
+                <select name="av" class="form-select">
+                    <option value="S">Sim</option>
+                    <option value="N">Não</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">OCS:</label>
+                <select name="ocs" class="form-select">
+                    <option value="S">Sim</option>
+                    <option value="N">Não</option>
+                </select>
+            </div>
         </div>
+        <!-- Repetir para WSUS, AV e OCS -->
 
         <div class="mb-3">
             <label class="form-label">Regional:</label>
