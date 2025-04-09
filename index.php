@@ -96,6 +96,13 @@ require 'includes/header.php';
                     <th>IP</th>
                     <th>Status</th>
                     <th>Regional</th>
+                    <th>MAC</th>
+                    <th>MESH</th>
+                    <th>AV</th>
+                    <th>WSUS</th>
+                    <th>OCS</th>
+                    <th>COMENTARIO</th>
+                    <th>CHAMADO</th>
                     <th>Último Contato</th>
                     <th>Ações</th>
                 </tr>
@@ -111,6 +118,13 @@ require 'includes/header.php';
                             </span>
                         </td>
                         <td><?= htmlspecialchars($maquina['regional_nome'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($maquina['mac']) ?></td>
+                        <td><?= htmlspecialchars($maquina['mesh']) ?></td>
+                        <td><?= htmlspecialchars($maquina['av']) ?></td>
+                        <td><?= htmlspecialchars($maquina['wsus']) ?></td>
+                        <td><?= htmlspecialchars($maquina['ocs']) ?></td>
+                        <td><?= htmlspecialchars($maquina['comentario']) ?></td>
+                        <td><?= htmlspecialchars($maquina['chamado']) ?></td>
                         <td>
                             <?= $maquina['contato_recente'] 
                                 ? date('d/m/Y H:i', strtotime($maquina['contato_recente'])) 
