@@ -1,5 +1,5 @@
+//alterar para realmete funcionar, fazendo consulta no banco de dados.
 <?php
-// Start session
 session_start();
 
 // Check if form is submitted

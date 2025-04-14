@@ -11,10 +11,13 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="/">Controle de Máquinas</a>
+            <a class="navbar-brand" href="/">Controle de Máquinas
+                <?php if (isset($_SESSION['usuario_nome'])): ?>
+                    - <?= $_SESSION['usuario_nome'] ?>
+                <?php endif; ?></a>
             <?php if (isset($_SESSION['usuario_id'])): ?>
                 <div class="navbar-nav">
-                    <a class="nav-link" href="/maquinas/cadastrar.php">Nova Máquina</a>
+                    <a class="nav-link" href="cadastro.php">Nova Máquina</a>
                     <a class="nav-link" href="/regionais/listar.php">Regionais</a>
                     <a class="nav-link" href="/logout.php">Sair</a>
                 </div>

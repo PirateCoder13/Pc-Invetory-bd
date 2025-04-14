@@ -56,6 +56,7 @@ CREATE TABLE `maquinas` (
   `comentario` varchar(100) DEFAULT NULL,
   `chamado` varchar(100) DEFAULT NULL,
   `data_cadastro` date DEFAULT current_timestamp(),
+  `data_contato` datetime DEFAULT NULL,
   `mesh` enum('S','N') DEFAULT NULL,
   `wsus` enum('S','N') DEFAULT NULL,
   `av` enum('S','N') DEFAULT NULL,
@@ -192,3 +193,33 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+/*
+Explicacao das tabelas:
+
+TABLE `maquinas` (
+  `id` int(11) NOT NULL,
+  `status` varchar(20) DEFAULT NULL, //no status quero OK, Fazendo, em Chamado e OFF
+  `nome` varchar(50) NOT NULL, //nome da maquina padrao (EDPE1234567).
+  `ip` varchar(15) DEFAULT NULL, //ip local da Celepar (10.37.#.#).
+  `mac` varchar(17) DEFAULT NULL,
+  `comentario` varchar(100) DEFAULT NULL,
+  `chamado` varchar(100) DEFAULT NULL, //numero do chamado aberto (P-12345-67).
+  `data_cadastro` date DEFAULT current_timestamp(), //inserido de acordo com a data de cadastro no site.
+  `data_contato` datetime DEFAULT NULL, //data e hora do ultimo contato com a maquina inserido manualmente. 
+  `mesh` enum('S','N') DEFAULT NULL, //SIM ou NAO
+  `wsus` enum('S','N') DEFAULT NULL, //SIM ou NAO
+  `av` enum('S','N') DEFAULT NULL, //SIM ou NAO
+  `ocs` enum('S','N') DEFAULT NULL, //SIM ou NAO
+  `regional` int(11) DEFAULT NULL
+)
+
+TABLE `regionais` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(50) NOT NULL, //nome da regional (R1-Curitiba).
+  `comentario` varchar(100) DEFAULT NULL //se houver algum comentario sobre a regional em relacao a abertura e execucao dos chamados.
+)
+
+outras informacoes no /db/controle_maquinas.sql
+*/

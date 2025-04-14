@@ -10,7 +10,7 @@ function verificaLogin()
 function getUsuario($pdo)
 {
     if (isset($_SESSION['usuario_id'])) {
-        $stmt = $pdo->prepare("SELECT * FROM Users WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, nome FROM users WHERE id = ?");
         $stmt->execute([$_SESSION['usuario_id']]);
         return $stmt->fetch();
     }

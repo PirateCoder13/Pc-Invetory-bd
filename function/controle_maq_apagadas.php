@@ -1,0 +1,1 @@
+//aqui quero adicionar um historico para as maquinas que foram apagadas do +60 dias sem contato do ocs.

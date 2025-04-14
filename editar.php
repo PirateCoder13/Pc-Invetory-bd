@@ -1,11 +1,7 @@
 <?php
-session_start();
-if (!isset($_SESSION['username'])) {
-    header('Location: login.php');
-    exit();
-}
-
-require 'includes/conexao.php';
+//adicionar verificador se usuario esta logado tem a function em /includes/auth.php
+require_once 'includes/auth.php';
+require 'includes/conn.php';
 
 $maquina = [];
 $regionais = [];
@@ -34,7 +30,7 @@ try {
 
     // Processar atualização
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
-        $dados = [
+        $dados = [ 
             ':id' => $_POST['id'],
             ':nome' => $_POST['nome'],
             ':status' => $_POST['status'],

@@ -1,31 +1,8 @@
 <?php
-session_start();
-if (!isset($_SESSION['username'])) {
-    header('Location: login.php');
-    exit();
-}
-
-// Configurações de conexão
-$host = 'localhost';
-$dbname = 'controle_maquinas';
-$username = 'root';
-$password = '';
-
-// Conexão PDO
-try {
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
-        $username,
-        $password,
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]
-    );
-} catch (PDOException $e) {
-    die("Erro de conexão: " . $e->getMessage());
-}
-
+//adicionar verificador se usuario esta logado tem a function em /includes/auth.php
+require_once 'includes/auth.php';
+require_once 'includes/conn.php';
+//conectar com banco de dados com a function /include/conn.php
 // Processar pesquisa
 $pesquisa = $_GET['pesquisa'] ?? '';
 $where = [];

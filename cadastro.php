@@ -1,11 +1,8 @@
 <?php
-session_start();
-if (!isset($_SESSION['username'])) {
-    header('Location: login.php');
-    exit();
-}
+require_once 'includes/auth.php';
+verificaLogin();
 
-require 'includes/conexao.php'; // Arquivo PDO corrigido
+require 'includes/conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     try {

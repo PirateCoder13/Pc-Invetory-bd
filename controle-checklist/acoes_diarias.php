@@ -1,0 +1,1 @@
+aqui serao gravadas as acoes diarias e separadas por dia, as maquinas serao cadastradas automaticamente
