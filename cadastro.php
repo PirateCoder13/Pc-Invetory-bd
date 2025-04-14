@@ -1,7 +1,10 @@
 <?php
 require_once 'includes/auth.php';
-verificaLogin();
 
+if (!isLoggedIn()) {
+    header('Location: login.php');
+    exit;
+}
 require 'includes/conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {

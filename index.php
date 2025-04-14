@@ -1,6 +1,23 @@
 <?php
-//adicionar verificador se usuario esta logado tem a function em /includes/auth.php
 require_once 'includes/auth.php';
+
+if (!isLoggedIn()) {
+    header('Location: login.php');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete'])) {
+    $id = $_GET['delete'];
+    $deleteStmt = $pdo->prepare("DELETE FROM maquinas WHERE id = ?");
+    if ($deleteStmt->execute([$id])) {
+        header("Location: index.php");
+        exit;
+    } else {
+        echo "Erro ao excluir máquina.";
+    }
+}
+
+
 require_once 'includes/conn.php';
 //conectar com banco de dados com a function /include/conn.php
 // Processar pesquisa
@@ -112,9 +129,11 @@ require 'includes/header.php';
                         <td>
                             <a href="editar.php?id=<?= $maquina['id'] ?>" 
                                class="btn btn-warning btn-sm">Editar</a>
-                            <a href="excluir.php?id=<?= $maquina['id'] ?>" 
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('Tem certeza?')">Excluir</a>
+                            <a  href="index.php?delete=<?= $maquina['id'] ?>"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Tem certeza que deseja excluir esta máquina?')"
+                            >Excluir</a>
+
                         </td>
                     </tr>
                 <?php endforeach; ?>

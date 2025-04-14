@@ -1,6 +1,11 @@
 <?php
-//adicionar verificador se usuario esta logado tem a function em /includes/auth.php
 require_once 'includes/auth.php';
+
+if (!isLoggedIn()) {
+    header('Location: login.php');
+    exit;
+}
+
 require 'includes/conn.php';
 
 $maquina = [];
@@ -126,6 +131,30 @@ include 'includes/header.php';
                 <option value="N" <?= $maquina['mesh'] === 'N' ? 'selected' : '' ?>>Não</option>
             </select>
         </div>
+        <div class="col-md-3">
+            <label>WSUS:</label>
+            <select name="wsus" class="form-select">
+                <option value="S" <?= $maquina['wsus'] === 'S' ? 'selected' : '' ?>>Sim</option>
+                <option value="N" <?= $maquina['wsus'] === 'N' ? 'selected' : '' ?>>Não</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>AV:</label>
+            <select name="av" class="form-select">
+                <option value="S" <?= $maquina['av'] === 'S' ? 'selected' : '' ?>>Sim</option>
+                <option value="N" <?= $maquina['av'] === 'N' ? 'selected' : '' ?>>Não</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>OCS:</label>
+            <select name="ocs" class="form-select">
+                <option value="S" <?= $maquina['ocs'] === 'S' ? 'selected' : '' ?>>Sim</option>
+                <option value="N" <?= $maquina['ocs'] === 'N' ? 'selected' : '' ?>>Não</option>
+            </select>
+        </div>
+
         
         <!-- Repetir para WSUS, AV e OCS -->
     </div>
