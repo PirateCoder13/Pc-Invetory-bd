@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             (nome, status, ip, mac, comentario, chamado, mesh, wsus, av, ocs, regional)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        
-        $stmt->execute([
+
+        $stmt->execute(
             $_POST['nome'],
             $_POST['status'],
             $_POST['ip'],
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             $_POST['wsus'],
             $_POST['av'],
             $_POST['ocs'],
-            $_POST['regional']
+            intval($_POST['regional'])  // Certifique-se de que 'regional' seja um inteiro
         ]);
 
         header('Location: index.php');
@@ -45,11 +45,11 @@ $regionais = $pdo->query("SELECT id, nome FROM regionais")->fetchAll();
 <head>
     <title>Cadastro de Máquina</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container { max-width: 800px; }
+    </style>
 </head>
-<body class="container mt-4">
-    <a href="index.php" class="btn btn-secondary mb-3">Voltar</a>
-    <h1>Cadastro de Máquina</h1>
-    
+<body class="container mt-5">
     <form method="POST">
         <div class="mb-3">
             <label class="form-label">Nome:</label>

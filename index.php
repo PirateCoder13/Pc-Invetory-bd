@@ -41,7 +41,9 @@ $sql = "
     SELECT 
         m.id, m.nome, m.status, m.ip, m.mac, 
         m.comentario, m.chamado, m.data_cadastro,
-        r.nome AS regional_nome,
+        m.mesh, m.wsus, m.av, m.ocs,
+        r.nome AS regional_nome, 
+        r.comentario AS regional_comentario,
         c.contato_recente
     FROM maquinas m
     LEFT JOIN regionais r ON m.regional = r.id
@@ -118,14 +120,14 @@ require 'includes/header.php';
                             </span>
                         </td>
                         <td><?= htmlspecialchars($maquina['regional_nome'] ?? 'N/A') ?></td>
-                        <td><?= htmlspecialchars($maquina['mac']) ?></td>
-                        <td><?= htmlspecialchars($maquina['mesh']) ?></td>
-                        <td><?= htmlspecialchars($maquina['av']) ?></td>
-                        <td><?= htmlspecialchars($maquina['wsus']) ?></td>
-                        <td><?= htmlspecialchars($maquina['ocs']) ?></td>
-                        <td><?= htmlspecialchars($maquina['comentario']) ?></td>
-                        <td><?= htmlspecialchars($maquina['chamado']) ?></td>
-                        <td>
+                        <td><?= htmlspecialchars($maquina['mac'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($maquina['mesh'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($maquina['av'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($maquina['wsus'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($maquina['ocs'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($maquina['comentario'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($maquina['chamado'] ?? 'N/A') ?></td>
+                        <td> 
                             <?= $maquina['contato_recente'] 
                                 ? date('d/m/Y H:i', strtotime($maquina['contato_recente'])) 
                                 : 'N/A' ?>

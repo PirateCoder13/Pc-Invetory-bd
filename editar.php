@@ -15,7 +15,7 @@ try {
     if (isset($_GET['id'])) {
         $stmt = $pdo->prepare("
             SELECT m.*, c.contato_recente, c.contato_anterior 
-            FROM Maquinas m
+            FROM maquinas m
             LEFT JOIN Contato c ON m.id = c.maquina_id
             WHERE m.id = ?
         ");
@@ -29,7 +29,7 @@ try {
     }
 
     // Buscar regionais
-    $stmt = $pdo->query("SELECT id, nome FROM Regionais");
+    $stmt = $pdo->query("SELECT id, nome FROM regionais");
     $regionais = $stmt->fetchAll();
 
     // Processar atualização
@@ -50,7 +50,7 @@ try {
         ];
 
         $stmt = $pdo->prepare("
-            UPDATE Maquinas SET 
+            UPDATE maquinas SET 
                 nome = :nome,
                 status = :status,
                 ip = :ip,
