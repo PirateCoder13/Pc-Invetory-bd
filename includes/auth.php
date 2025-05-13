@@ -1,18 +1,10 @@
 <?php
-function verificaLogin()
-{
-    if (!isset($_SESSION['usuario_id'])) {
-        header("Location: /login.php");
-        exit();
-    }
-}
+session_start(); // Inicia a sessão, se ainda não foi iniciada
 
-function getUsuario($pdo)
-{
-    if (isset($_SESSION['usuario_id'])) {
-        $stmt = $pdo->prepare("SELECT id, nome FROM users WHERE id = ?");
-        $stmt->execute([$_SESSION['usuario_id']]);
-        return $stmt->fetch();
-    }
-    return null;
+// Verifica se o usuário está logado
+if (!isset($_SESSION['username'])) {
+    // Redireciona para a página de login, se não estiver logadologin, se não estiver logado
+    header('Location: /login.php');
+    exit();
 }
+?>

@@ -1,6 +1,7 @@
 <?php
 
-function log_maquina_apagada($maquina, $ip, $data_exclusao, $hora_exclusao) {
+function log_maquina_apagada($maquina, $ip, $data_exclusao, $hora_exclusao)
+{
     include_once __DIR__ . '/../includes/conn.php';
 
     $query = "INSERT INTO apagadas (maquina, ip, data_exclusao, hora_exclusao) VALUES (?, ?, ?, ?)";

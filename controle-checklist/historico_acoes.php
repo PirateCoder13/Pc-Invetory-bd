@@ -17,35 +17,26 @@ while ($row = $result->fetch_assoc()) {
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Histórico de Ações</title>
 </head>
+
 <body>
 
-<h1>Histórico de Ações</h1>
+    <h1>Histórico de Ações</h1>
 
-<?php foreach ($actionsByMonth as $monthYear => $actions): ?>
-    <h2><?php echo date("F Y", strtotime($monthYear . "-01")); ?></h2>
-    <ul>
-        <?php foreach ($actions as $action): ?>
-            <li><?php echo $action['descricao']; ?> - <?php echo date("d/m/Y H:i", strtotime($action['data_acao'])); ?></li>
-        <?php endforeach; ?>
-    </ul>
-    <a href="download_excel.php?month=<?php echo $monthYear; ?>">Download Excel (<?php echo date("F Y", strtotime($monthYear . "-01")); ?>)</a>
-<?php endforeach; ?>
+    <?php foreach ($actionsByMonth as $monthYear => $actions): ?>
+        <h2><?php echo date("F Y", strtotime($monthYear . "-01")); ?></h2>
+        <ul>
+            <?php foreach ($actions as $action): ?>
+                <li><?php echo $action['descricao']; ?> - <?php echo date("d/m/Y H:i", strtotime($action['data_acao'])); ?></li>
+            <?php endforeach; ?>
+        </ul>
+        <a href="download_excel.php?month=<?php echo $monthYear; ?>">Download Excel
+            (<?php echo date("F Y", strtotime($monthYear . "-01")); ?>)</a>
+    <?php endforeach; ?>
 
 </body>
+
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

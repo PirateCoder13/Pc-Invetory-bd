@@ -1,8 +1,6 @@
-php
 <?php
 
 require_once __DIR__ . '/../includes/conn.php';
-require_once __DIR__ . '/../vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -41,7 +39,85 @@ if (isset($_GET['month'])) {
 
     $writer->save('php://output');
     exit;
+} elseif (isset($_GET['data_inicio']) && isset($_GET['data_fim'])) {
+    $dataInicio = $_GET['data_inicio'];
+    $dataFim = $_GET['data_fim'];
+
+    $query = "SELECT * FROM maquinas WHERE data_cadastro BETWEEN ? AND ?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$dataInicio, $dataFim]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=maquinas_' . $dataInicio . '_a_' . $dataFim . '.csv');
+
+    $output = fopen('php://output', 'w');
+    // Cabeçalhos
+    fputcsv($output, [
+        'Nome',
+        'Status',
+        'IP',
+        'MAC',
+        'Comentário',
+        'Chamado',
+        'Data Cadastro',
+        'Mesh',
+        'Antivirus',
+        'WSUS',
+        'OCS'
+    ]);
+    foreach ($result as $maquina) {
+        // Converte S/N para Instalado/Não instalado
+        $mesh = ($maquina['mesh'] === 'S') ? 'Instalado' : 'Não instalado';
+        $av = ($maquina['av'] === 'S') ? 'Instalado' : 'Não instalado';
+        $wsus = ($maquina['wsus'] === 'S') ? 'Instalado' : 'Não instalado';
+        $ocs = ($maquina['ocs'] === 'S') ? 'Instalado' : 'Não instalado';
+
+        fputcsv($output, [
+            $maquina['nome'],
+            $maquina['status'],
+            $maquina['ip'],
+            $maquina['mac'],
+            $maquina['comentario'],
+            $maquina['chamado'],
+            $maquina['data_cadastro'],
+            $mesh,
+            $av,
+            $wsus,
+            $ocs
+        ]);
+    }
+    fclose($output);
+    exit;
 } else {
-    echo "Mês não especificado.";
+    ?>
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <title>Exportar Máquinas por Data de Cadastro</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <body class="container mt-5">
+        <h2>Exportar Máquinas por Data de Cadastro</h2>
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="data_inicio" class="form-label">Data Início:</label>
+                <input type="date" name="data_inicio" id="data_inicio" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label for="data_fim" class="form-label">Data Fim:</label>
+                <input type="date" name="data_fim" id="data_fim" class="form-control" required>
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-success">Baixar .csv</button>
+                <a href="../index.php" class="btn btn-secondary">Voltar ao Início</a>
+            </div>
+        </form>
+    </body>
+
+    </html>
+    <?php
 }
 ?>

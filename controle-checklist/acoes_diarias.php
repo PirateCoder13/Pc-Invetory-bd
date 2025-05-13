@@ -1,1 +1,1 @@
-aqui serao gravadas as acoes diarias e separadas por dia, as maquinas serao cadastradas automaticamente
+//aqui serão gravadas as ações diarias e separadas por dia e mês
