@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 }
 
 // Buscar regionais
-$regionais = $pdo->query("SELECT id, nome FROM regionais")->fetchAll();
+$regionais = $pdo->query("SELECT id, nome, comentario FROM regionais")->fetchAll();
 ?>
 
 <!DOCTYPE html>
@@ -128,7 +128,7 @@ $regionais = $pdo->query("SELECT id, nome FROM regionais")->fetchAll();
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">IP:</label>
-                    <input type="text" name="ip" class="form-control">
+                    <input type="text" name="ip" id="ip" class="form-control">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">MAC:</label>
@@ -180,13 +180,14 @@ $regionais = $pdo->query("SELECT id, nome FROM regionais")->fetchAll();
 
             <div class="mb-3">
                 <label class="form-label">Regional:</label>
-                <select name="regional" class="form-select" required>
+                <select name="regional" class="form-select" id="regional" required>
                     <?php foreach ($regionais as $regional): ?>
-                        <option value="<?= $regional['id'] ?>">
+                        <option value="<?= $regional['id'] ?>" data-comentario="<?= htmlspecialchars($regional['comentario']) ?>">
                             <?= htmlspecialchars($regional['nome']) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <div id="regional-nome" class="mt-2 text-info"></div>
             </div>
 
             <div class="mb-3">
@@ -203,6 +204,46 @@ $regionais = $pdo->query("SELECT id, nome FROM regionais")->fetchAll();
             <a href="index.php" class="btn btn-secondary">Voltar</a>
         </form>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let regionaisJson = {};
+        let nomeParaId = {};
+        let idParaComentario = {};
+        const select = document.getElementById('regional');
+        const regionalNomeDiv = document.getElementById('regional-nome');
+        for (let i = 0; i < select.options.length; i++) {
+            const nome = select.options[i].textContent.trim();
+            const id = select.options[i].value;
+            nomeParaId[nome] = id;
+            idParaComentario[id] = select.options[i].getAttribute('data-comentario');
+        }
+
+        fetch('regionais.json')
+            .then(response => response.json())
+            .then(data => { regionaisJson = data; });
+
+        function atualizarRegional() {
+            const ip = document.getElementById('ip').value.trim();
+            const ipBase = ip.split('.').slice(0, 3).join('.') + '.0';
+            if(regionaisJson[ipBase]) {
+                const nomeRegional = regionaisJson[ipBase].trim();
+                if (nomeParaId[nomeRegional]) {
+                    select.value = nomeParaId[nomeRegional];
+                    // Mostra nome + cidades
+                    regionalNomeDiv.innerHTML = `<b>${nomeRegional}</b><br><small>${idParaComentario[nomeParaId[nomeRegional]] || ''}</small>`;
+                } else {
+                    regionalNomeDiv.textContent = nomeRegional;
+                }
+            } else {
+                regionalNomeDiv.textContent = "Regional não encontrada para este IP.";
+            }
+        }
+
+        document.getElementById('ip').addEventListener('input', atualizarRegional);
+        document.getElementById('ip').addEventListener('blur', atualizarRegional);
+    });
+    </script>
 </body>
 
 </html>

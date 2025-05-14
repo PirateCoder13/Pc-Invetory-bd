@@ -125,11 +125,13 @@ try {
 <body>
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Controle de Máquinas</h2>
+            <h2>Controle de Máquinass</h2>
             <div>
                 <a href="cadastro.php" class="btn btn-success btn-sm">Nova Máquina</a>
                 <a href="controle-checklist/download_excel.php" class="btn btn-info btn-sm text-white">Download</a>
                 <a href="maquinas_fazendo.php" class="btn btn-warning btn-sm text-dark">Fazendo</a>
+                <a href="maquinas_duplicada.php" class="btn btn-warning btn-sm text-dark">Duplicadas</a>
+                <a href="maquinas_dia.php" class="btn btn-warning btn-sm text-dark">Dia</a>
                 <form method="post" class="d-inline">
                     <button type="submit" name="logout" class="btn btn-danger btn-sm">Logout</button>
                 </form>
