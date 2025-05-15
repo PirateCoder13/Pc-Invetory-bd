@@ -3,54 +3,94 @@ require_once 'includes/auth.php';
 require 'includes/conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
-    try {
-        // Iniciar transação
-        $pdo->beginTransaction();
+    $erros = [];
 
-        // Inserir na tabela `maquinas`
-        $stmtMaquinas = $pdo->prepare("
-            INSERT INTO maquinas 
-            (nome, status, ip, mac, comentario, chamado, mesh, wsus, av, ocs, regional, data_cadastro)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        $stmtMaquinas->execute([
-            $_POST['nome'],
-            $_POST['status'],
-            $_POST['ip'],
-            $_POST['mac'],
-            $_POST['comentario'],
-            $_POST['chamado'],
-            $_POST['mesh'],
-            $_POST['wsus'],
-            $_POST['av'],
-            $_POST['ocs'],
-            intval($_POST['regional']),  // Certifique-se de que 'regional' seja um inteiro
-            $_POST['data_cadastro']
-        ]);
+    // Consulta única para nome, ip e mac
+    $stmt = $pdo->prepare("
+        SELECT nome, ip, mac FROM maquinas 
+        WHERE nome = ? OR ip = ? OR mac = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$_POST['nome'], $_POST['ip'], $_POST['mac']]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Obter o ID da máquina recém-inserida
-        $maquinaId = $pdo->lastInsertId();
+    if ($row && empty($_POST['forcar_cadastro'])) {
+        if ($row['nome'] === $_POST['nome']) {
+            $erros[] = "Já existe uma máquina com este <b>nome</b>!";
+        }
+        if ($row['ip'] === $_POST['ip']) {
+            $erros[] = "Já existe uma máquina com este <b>IP</b>!";
+        }
+        if ($row['mac'] === $_POST['mac']) {
+            $erros[] = "Já existe uma máquina com este <b>MAC</b>!";
+        }
+    }
 
-        // Inserir na tabela `contato`
-        $stmtContato = $pdo->prepare("
-            INSERT INTO contato (maquina_id, contato_recente, contato_anterior)
-            VALUES (?, ?, ?)
-        ");
-        $stmtContato->execute([
-            $maquinaId,
-            $_POST['data_contato'], // Data de contato fornecida pelo usuário
-            null                    // contato_anterior será NULL
-        ]);
+    if ($erros && empty($_POST['forcar_cadastro'])) {
+        echo '<div class="alert alert-danger text-center">' . implode('<br>', $erros) . '</div>';
+        // Botão para cadastrar mesmo assim
+        echo '
+        <form method="POST" style="text-align:center;">
+            ' . 
+            // Repita todos os campos do POST como campos ocultos
+            array_reduce(array_keys($_POST), function($carry, $key) {
+                if ($key === 'submit') return $carry;
+                return $carry . '<input type="hidden" name="'.htmlspecialchars($key).'" value="'.htmlspecialchars($_POST[$key]).'">';
+            }, '') . '
+            <input type="hidden" name="forcar_cadastro" value="1">
+            <button type="submit" name="submit" class="btn btn-warning mt-2">Cadastrar mesmo assim</button>
+        </form>
+        ';
+    } else if (!$erros || !empty($_POST['forcar_cadastro'])) {
+        try {
+            // Iniciar transação
+            $pdo->beginTransaction();
 
-        // Confirmar transação
-        $pdo->commit();
+            // Inserir na tabela `maquinas`
+            $stmtMaquinas = $pdo->prepare("
+                INSERT INTO maquinas 
+                (nome, status, ip, mac, comentario, chamado, mesh, wsus, av, ocs, regional, data_cadastro)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmtMaquinas->execute([
+                $_POST['nome'],
+                $_POST['status'],
+                $_POST['ip'],
+                $_POST['mac'],
+                $_POST['comentario'],
+                $_POST['chamado'],
+                $_POST['mesh'],
+                $_POST['wsus'],
+                $_POST['av'],
+                $_POST['ocs'],
+                intval($_POST['regional']),  // Certifique-se de que 'regional' seja um inteiro
+                $_POST['data_cadastro']
+            ]);
 
-        header('Location: index.php');
-        exit();
-    } catch (PDOException $e) {
-        // Reverter transação em caso de erro
-        $pdo->rollBack();
-        die("Erro ao cadastrar: " . $e->getMessage());
+            // Obter o ID da máquina recém-inserida
+            $maquinaId = $pdo->lastInsertId();
+
+            // Inserir na tabela `contato`
+            $stmtContato = $pdo->prepare("
+                INSERT INTO contato (maquina_id, contato_recente, contato_anterior)
+                VALUES (?, ?, ?)
+            ");
+            $stmtContato->execute([
+                $maquinaId,
+                $_POST['data_contato'], // Data de contato fornecida pelo usuário
+                null                    // contato_anterior será NULL
+            ]);
+
+            // Confirmar transação
+            $pdo->commit();
+
+            header('Location: index.php');
+            exit();
+        } catch (PDOException $e) {
+            // Reverter transação em caso de erro
+            $pdo->rollBack();
+            die("Erro ao cadastrar: " . $e->getMessage());
+        }
     }
 }
 
